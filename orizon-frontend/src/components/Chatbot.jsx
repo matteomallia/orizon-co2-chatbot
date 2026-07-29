@@ -48,7 +48,7 @@ export default function Chatbot() {
     try {
       const backendUrl = import.meta.env.VITE_API_URL || 'https://orizon-backend1.onrender.com';
 
-      const response = await axios.post('${backendUrl}/api/chat', {
+      const response = await axios.post(`${backendUrl}/api/chat`, {
         chatId,
         message: textToSend
       });
