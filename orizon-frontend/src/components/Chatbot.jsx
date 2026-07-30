@@ -5,7 +5,7 @@ import { Send, Bot, ChevronRight } from 'lucide-react';
 // Importazioni relative all'interno della stessa cartella 'components'
 import Sidebar from './Sidebar';
 import ChatMessage from './ChatMessage';
-import '../App.css'; // Importa App.css che sta nella cartella padre (src)
+import './App.css'; // Importa App.css 
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
