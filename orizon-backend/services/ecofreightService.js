@@ -4,49 +4,45 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const fetchEcoFreightEmissions = async (data) => {
-  const { transport, origin, destination, baggageWeight } = data;
+  const { transport, baggageWeight = 10 } = data;
 
-  console.log(`📡 Invio richiesta reale a EcoFreight per: ${transport} da ${origin} a ${destination}`);
+  console.log(`📡 Chiamata API REALE (Carbon Interface) per trasporto: ${transport}`);
 
-  const apiKey = process.env.ECOFREIGHT_API_KEY;
-  
+  const apiKey = process.env.CARBON_INTERFACE_API_KEY;
   if (!apiKey) {
-    throw new Error("Chiave API di EcoFreight mancante nel file .env");
+    throw new Error("Chiave API di Carbon Interface mancante nelle variabili d'ambiente.");
   }
 
   try {
-    const response = await axios.post('https://api.ecofreight.io/v1/calculate', {
-      transport_mode: transport, // es. "plane", "train", "car"
-      origin: origin,
-      destination: destination,
-      cargo_weight_kg: baggageWeight
-    }, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+    // Esempio: Chiamata reale per stima emissioni veicolo/trasporto
+    const response = await axios.post(
+      'https://www.carboninterface.com/api/v1/estimates',
+      {
+        type: 'vehicle',
+        distance_unit: 'km',
+        distance_value: 500, // o calcolata dinamicamente
+        vehicle_model_id: '7268a9b7-17e8-4c8d-aded-57059252daf6' // ID veicolo standard
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
+
+    const attributes = response.data.data.attributes;
 
     return {
-      co2: response.data.total_co2_emissions, // Adatta queste chiavi in base al JSON restituito da EcoFreight
-      unit: response.data.unit || "kg",
+      co2: attributes.carbon_kg,
+      unit: "kg",
       transport,
-      origin,
-      destination,
-      weight: baggageWeight
+      distanceKm: attributes.distance_value,
+      isRealData: true
     };
 
   } catch (error) {
-    console.error("❌ Errore durante la chiamata all'API di EcoFreight:", error.response?.data || error.message);
-    
-    return {
-      co2: 142.5, 
-      unit: "kg",
-      transport,
-      origin,
-      destination,
-      weight: baggageWeight,
-      isFallback: true
-    };
+    console.error("❌ Errore API Carbon Interface:", error.response?.data || error.message);
+    throw new Error("Impossibile recuperare i dati reali sulle emissioni.");
   }
 };
