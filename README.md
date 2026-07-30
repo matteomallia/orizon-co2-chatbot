@@ -101,3 +101,15 @@ Prima di eseguire l'applicazione con qualsiasi modalità, assicurati di configur
 
 # Avvio del server di sviluppo Vite
     npm run dev
+
+---
+
+## 🔒 6. SICUREZZA E GESTIONE SECRETS
+
+### Isolamento dei Secrets
+- I file `.env` di frontend e backend sono inclusi nel `.gitignore` e mai tracciati nel repository Git.
+- **Produzione (Render)**: Tutte le credenziali di produzione (`OPENAI_API_KEY`, `MONGODB_URI`, `FRONTEND_URL`, `VITE_API_URL`) sono gestite direttamente tramite il pannello Environment Variables dei Web Services di Render.
+- **Pipeline CI/CD (GitHub)**: Le credenziali necessarie per i job di automazione sono memorizzate in **GitHub Repository Secrets** (`Settings > Secrets and variables > Actions`).
+
+### Mascheramento nei Log
+Nelle pipeline di GitHub Actions, i secrets vengono iniettati tramite l'oggetto `${{ secrets.<NOME_SECRET> }}`. È stato verificato che l'output della console oscuri automaticamente tali valori (`***`), impedendo qualsiasi fuga accidentale nei log pubblici.
