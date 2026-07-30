@@ -11,7 +11,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// 1. Configurazione CORS Sicura (Suggerimento docente)
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173', // Dev server Vite
+  'http://localhost:3000'
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Consente richieste senza origin (Postman, cURL) o dai domini consentiti
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origine ${origin} non consentita dalle politiche CORS`));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -26,7 +44,7 @@ app.post('/api/chat', async (req, res) => {
   }
 
   try {
-    // 1. Recupera o crea la sessione di chat dal Database (Persistenza dei dati)
+    // Recupera o crea la sessione di chat dal Database
     let chatSession = await Chat.findOne({ chatId });
     if (!chatSession) {
       chatSession = new Chat({ chatId, messages: [] });
@@ -42,7 +60,7 @@ app.post('/api/chat', async (req, res) => {
     ];
 
     let response = await openai.chat.completions.create({
-      model: "gpt-4o", // Utilizziamo gpt-4o, ottimizzato per tool calling e dialoghi veloci
+      model: "gpt-4o",
       messages: apiMessages,
       tools: tools,
       tool_choice: "auto",
@@ -57,7 +75,17 @@ app.post('/api/chat', async (req, res) => {
       
       if (toolCall.function.name === "calculateCO2") {
         
-        const args = JSON.parse(toolCall.function.arguments);
+        // 2. Try/Catch dedicato per il parsing dei tool arguments (Suggerimento docente)
+        let args;
+        try {
+          args = JSON.parse(toolCall.function.arguments);
+        } catch (parseError) {
+          console.error("❌ Errore durante il parsing degli argomenti del tool LLM:", parseError.message);
+          return res.status(400).json({ 
+            error: "Il modello AI ha generato argomenti per la funzione non validi.",
+            details: parseError.message 
+          });
+        }
        
         const emissionResult = await fetchEcoFreightEmissions(args);
 
