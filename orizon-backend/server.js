@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. Configurazione CORS Sicura (Suggerimento docente)
+// 1. Configurazione CORS Sicura
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173', // Dev server Vite
@@ -75,7 +75,7 @@ app.post('/api/chat', async (req, res) => {
       
       if (toolCall.function.name === "calculateCO2") {
         
-        // 2. Try/Catch dedicato per il parsing dei tool arguments (Suggerimento docente)
+        // 2. Try/Catch dedicato per il parsing dei tool arguments
         let args;
         try {
           args = JSON.parse(toolCall.function.arguments);
