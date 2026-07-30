@@ -1,47 +1,25 @@
-# 🌿 Orizon AI - Eco-Turismo & Chatbot CO₂ (DevOps LifeCycle)
+# 🌿 Orizon AI - Eco-Travel CO₂ Calculator
 
-Applicazione MERN (MongoDB, Express, React, Node) per il calcolo dell'impatto ambientale tramite un Agente AI Conversazionale. Questo repository contiene l'intero ciclo DevOps: containerizzazione Docker, pipeline CI/CD con GitHub Actions, gestione sicura delle credenziali, deploy automatico e monitoraggio in tempo reale.
-
----
-
-## 🛠️ Stack Tecnologico & Architettura
-* **Frontend**: React 18 + Vite
-* **Backend**: Node.js + Express
-* **Database**: MongoDB Atlas
-* **AI & Integration**: OpenAI GPT-4o API & EcoFreight API
-* **Containerization**: Docker & Docker Compose
-* **CI/CD**: GitHub Actions
-* **Hosting**: Vercel (Frontend) / Render (Backend)
-* **Monitoring**: UptimeRobot & Sentry
+Orizon è un'applicazione web full-stack (MERN + AI) progettata per aiutare gli utenti a calcolare e comprendere l'impatto ambientale dei propri viaggi in termini di emissioni di CO₂, offrendo suggerimenti di compensazione e alternative ecologiche in tempo reale.
 
 ---
 
-## 🎯 Definizione degli Ambienti
+## 🏗️ Architettura del Sistema
 
-| Ambiente | Runtime / Host | Database | Trigger Deploy |
-| :--- | :--- | :--- | :--- |
-| **Development** | Docker Compose (Locale) | MongoDB Local / Atlas Dev | Manuale (`docker compose up`) |
-| **Staging** | GitHub Actions Runner | DB Test / Mock | Push / PR su branch secondari |
-| **Production** | Vercel (FE) + Render (BE) | MongoDB Atlas Prod | Push automatico su `main` |
-
----
-
-## 📋 Roadmap di Progetto (DevOps Workflow)
-
-- [x] **Step 1: Esplorazione & Pianificazione** (Analisi MERN + README)
-- [ ] **Step 2: Containerizzazione** (Dockerfile per Frontend/Backend e `docker-compose.yml`)
-- [ ] **Step 3: Sicurezza e Gestione Secrets** (`.env`, `.gitignore` e GitHub Secrets)
-- [ ] **Step 4: Pipeline CI (Continuous Integration)** (Linting + Build automatizzata su `main`)
-- [ ] **Step 5: Pipeline CD & Deploy Pubblico** (Deploy automatico su Vercel/Render)
-- [ ] **Step 6: Monitoraggio & Error Tracking** (Integrazione Sentry & UptimeRobot)
+- **Frontend**: React 18 (Vite), Lucide Icons, Architettura a componenti modulari (`Sidebar`, `ChatMessage`, `ImpactTable`).
+- **Backend**: Node.js, Express.js (ES Modules).
+- **Database**: MongoDB Atlas per la persistenza delle sessioni di chat e della cronologia.
+- **AI Integration**: OpenAI API (`gpt-4o`) con **Function Calling / Tool Calling** per la strutturazione dei dati ambientali.
+- **Security & DevOps**: CORS dinamici orientati alla produzione, gestione avanzata degli errori di parsing e Dockerization.
 
 ---
 
-## 🚀 Guida Rapida allo Sviluppo Locale (Docker)
+## 🛠️ Requisiti e Variabili d'Ambiente
 
-### 1. Clona il repository e configura le variabili
-Crea un file `.env` sia nel frontend che nel backend seguendo le guide `.env.example`.
-
-### 2. Avvia l'intero stack con Docker Compose
-```bash
-docker compose up --build
+### Backend (`/orizon-backend/.env`)
+```env
+PORT=5000
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/orizon
+OPENAI_API_KEY=sk-...
+FRONTEND_URL=[https://orizon-frontend1.onrender.com](https://orizon-frontend1.onrender.com)
+ECOFREIGHT_API_KEY=dummy_key_for_internal_engine
