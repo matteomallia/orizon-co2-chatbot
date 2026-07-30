@@ -113,3 +113,15 @@ Prima di eseguire l'applicazione con qualsiasi modalità, assicurati di configur
 
 ### Mascheramento nei Log
 Nelle pipeline di GitHub Actions, i secrets vengono iniettati tramite l'oggetto `${{ secrets.<NOME_SECRET> }}`. È stato verificato che l'output della console oscuri automaticamente tali valori (`***`), impedendo qualsiasi fuga accidentale nei log pubblici.
+
+---
+
+## ⚡ 7. PIPELINE CI (CONTINUOUS INTEGRATION)
+
+### Automazione e Validazione
+La pipeline di Continuous Integration è implementata tramite **GitHub Actions** (`.github/workflows/ci.yml`) e si attiva automaticamente ad ogni `push` o `pull_request` sul branch `main`.
+
+### Fasi della Pipeline:
+1. **Source Checkout & Node.js Setup**: Prepara l'ambiente di esecuzione su runner Linux `ubuntu-latest`.
+2. **Linting & Code Quality**: Esegue l'analisi statica del codice nel frontend per prevenire l'inclusione di errori sintattici nel codebase.
+3. **Docker Container Verification Build**: Esegue la build atomica delle immagini Docker sia per il `frontend` che per il `backend`. In caso di fallimento della build, la pipeline si interrompe segnalando lo stato rosso ($\times$).
