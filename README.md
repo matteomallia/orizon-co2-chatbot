@@ -154,3 +154,36 @@ Il deployment continuo è affidato a **Render.com**, integrato nativamente con i
 - **Crash Reporting**: Integrato SDK Sentry (`@sentry/react`) per l'intercettazione in tempo reale delle eccezioni uncaught in frontend.
 - **Context & Stack Trace**: Cattura automatica di metadati di sessione, browser, sistema operativo e stack trace dettagliato per accelerare il debugging in produzione.
 - **Privacy & Security**: Mascheramento automatico dei dati sensibili degli utenti prima dell'invio degli eventi a Sentry.
+
+---
+
+## 🚨 10. GESTIONE E INTERPRETAZIONE DEGLI ALERT
+
+In questo capitolo viene documentata la procedura di risposta rapida (**Incident Response**) agli alert inviati dai sistemi di monitoraggio.
+
+### 🔔 1. Alert da UptimeRobot (Disponibilità)
+
+UptimeRobot effettua controlli HTTP sintetici ogni 5 minuti. Gli alert vengono inviati via Email/Webhook in caso di anomalie.
+
+| Notifica / Alert | Causa Probabile | Azione Correttiva (Runbook) |
+| :--- | :--- | :--- |
+| **HTTP 500 / 502 / 503** | Errore del server Node.js o crash dell'applicazione backend. | 1. Controllare i log di sistema sul pannello Render (`Logs`).<br>2. Verificare che la connessione al cluster MongoDB Atlas sia attiva.<br>3. Se necessario, effettuare un roll-back al commit precedente. |
+| **Timeout (> 30s) / DOWN temporaneo** | **Cold Start** del container su Render (Free Tier) dopo inattività o latenza di rete eccezionale. | 1. Attendere il controllo successivo (5 min) per verificare il risveglio dell'istanza.<br>2. Verificare lo stato dei servizi globali di Render e MongoDB Atlas. |
+| **SSL / Certificate Warning** | Certificato HTTPS scaduto o non rinnovato da Render. | Verificare le impostazioni del dominio e il rinnovo automatico gestito da Render. |
+
+---
+
+### 🐞 2. Alert da Sentry (Error Tracking)
+
+Sentry cattura le eccezioni non gestite nel client React e invia notifica immediata quando si verifica una nuova *Issue*.
+
+#### Come interpretare le Issue su Sentry:
+1. **Uncaught Exceptions (es. `TypeError`, `ReferenceError`)**:
+   - **Interpretazione**: Bug nel codice frontend o risposta inattesa dall'API (es. payload JSON malformato o campi `undefined`).
+   - **Azione**: Verificare lo **Stack Trace** nella dashboard Sentry per individuare il file e la riga esatta, oltre all'impatto sul totale degli utenti (`Affected Users`).
+2. **API Error / Network Failures (es. `Failed to fetch`)**:
+   - **Interpretazione**: Impossibilità del frontend di raggiungere l'URL del backend Render (`VITE_API_URL`).
+   - **Azione**: Verificare se il backend è in stato di downtime (incrociando i dati con UptimeRobot) o se sono presenti problemi di policy CORS.
+3. **OpenAI Rate Limit / Tool Error**:
+   - **Interpretazione**: Superamento della quota di token o errore durante la chiamata alle API di OpenAI.
+   - **Azione**: Verificare il saldo/quota nel dashboard di OpenAI.
