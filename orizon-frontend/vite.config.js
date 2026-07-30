@@ -7,6 +7,6 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: true // <-- Aggiungi questa riga per permettere qualsiasi host su Render
+    allowedHosts: true // 
   }
 })
