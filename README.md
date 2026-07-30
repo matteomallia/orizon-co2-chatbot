@@ -125,3 +125,32 @@ La pipeline di Continuous Integration è implementata tramite **GitHub Actions**
 1. **Source Checkout & Node.js Setup**: Prepara l'ambiente di esecuzione su runner Linux `ubuntu-latest`.
 2. **Linting & Code Quality**: Esegue l'analisi statica del codice nel frontend per prevenire l'inclusione di errori sintattici nel codebase.
 3. **Docker Container Verification Build**: Esegue la build atomica delle immagini Docker sia per il `frontend` che per il `backend`. In caso di fallimento della build, la pipeline si interrompe segnalando lo stato rosso ($\times$).
+
+---
+
+## 🌐 8. PIPELINE CD & DEPLOYMENT PUBBLICO
+
+### Continuous Deployment Automation
+Il deployment continuo è affidato a **Render.com**, integrato nativamente con il repository GitHub.
+
+- **Trigger di Deploy**: Ogni `push` con esito positivo sul branch `main` attiva automaticamente il workflow di build e release su Render via Webhook.
+- **Gestione Ambiente**: I servizi utilizzano container isolati con variabili d'ambiente iniettate in modo sicuro tramite il pannello di controllo di Render.
+- **Zero-Downtime Deployment**: Render gestisce il passaggio alla nuova versione dell'applicazione sostituendo le istanze solo dopo il completamento con esito positivo dei health check.
+
+### Link di Produzione
+- **Frontend Application**: [https://orizon-frontend1.onrender.com](https://orizon-frontend1.onrender.com)
+- **Backend API Service**: [https://orizon-backend1.onrender.com](https://orizon-backend1.onrender.com)
+
+---
+
+## 📊 9. MONITORAGGIO, LOGGING E GESTIONE ERRORE
+
+### 1. Uptime Monitoring (UptimeRobot)
+- **Stato Servizi**: Monitoraggio sintetico attivo 24/7 su endpoint HTTP/HTTPS tramite UptimeRobot.
+- **Health Checks**: Intervallo di controllo impostato a 5 minuti su Frontend e Backend API.
+- **Alerting System**: Configurate notifiche automatiche via email in caso di Downtime o latenza anomala (> 2000ms).
+
+### 2. Application Error Tracking (Sentry)
+- **Crash Reporting**: Integrato SDK Sentry (`@sentry/react`) per l'intercettazione in tempo reale delle eccezioni uncaught in frontend.
+- **Context & Stack Trace**: Cattura automatica di metadati di sessione, browser, sistema operativo e stack trace dettagliato per accelerare il debugging in produzione.
+- **Privacy & Security**: Mascheramento automatico dei dati sensibili degli utenti prima dell'invio degli eventi a Sentry.
