@@ -122,9 +122,10 @@ Nelle pipeline di GitHub Actions, i secrets vengono iniettati tramite l'oggetto 
 La pipeline di Continuous Integration è implementata tramite **GitHub Actions** (`.github/workflows/ci.yml`) e si attiva automaticamente ad ogni `push` o `pull_request` sul branch `main`.
 
 ### Fasi della Pipeline:
-1. **Source Checkout & Node.js Setup**: Prepara l'ambiente di esecuzione su runner Linux `ubuntu-latest`.
-2. **Linting & Code Quality**: Esegue l'analisi statica del codice nel frontend per prevenire l'inclusione di errori sintattici nel codebase.
-3. **Docker Container Verification Build**: Esegue la build atomica delle immagini Docker sia per il `frontend` che per il `backend`. In caso di fallimento della build, la pipeline si interrompe segnalando lo stato rosso ($\times$).
+1. **Source Checkout & Node.js Setup**: Prepara l'ambiente di esecuzione su runner Linux `ubuntu-latest` con Node.js 22.
+2. **Frontend Quality Checks**: Esegue l'installazione delle dipendenze, l'analisi statica (`oxlint`) e il controllo della build di produzione (`vite build`) per il client React.
+3. **Backend Quality Checks**: Esegue l'installazione delle dipendenze e l'analisi statica del codice server (`oxlint`) per verificare la correttezza sintattica del codice Express.
+4. **Docker Container Verification Build**: Esegue la build atomica delle immagini Docker per l'intera architettura tramite `docker compose build`. In caso di errore di linting o build, la pipeline si interrompe segnalando il fallimento ($\times$).
 
 ---
 
