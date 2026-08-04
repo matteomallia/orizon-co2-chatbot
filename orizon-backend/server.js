@@ -32,6 +32,18 @@ app.use(cors({
 
 app.use(express.json());
 
+// -------------------------------------------------------------
+// 📍 Health Check Endpoints (per UptimeRobot e Render Monitoring)
+// Supporta sia GET che HEAD per evitare risposte HTTP 404
+// -------------------------------------------------------------
+app.route(['/', '/health'])
+  .get((req, res) => {
+    res.status(200).json({ status: 'OK', message: 'Orizon Backend API is live' });
+  })
+  .head((req, res) => {
+    res.status(200).end();
+  });
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('🌿 Connessione a MongoDB Atlas completata con successo!'))
   .catch((err) => console.error('❌ Errore di connessione a MongoDB:', err));
