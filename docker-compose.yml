@@ -1,0 +1,33 @@
+services:
+  # Servizio Backend
+  backend:
+    build:
+      context: ./orizon-backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+    env_file:
+      - ./orizon-backend/.env
+    volumes:
+      - ./orizon-backend:/app
+      - /app/node_modules
+
+# Servizio Frontend
+  frontend:
+    build:
+      context: ./orizon-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5001
+    env_file:
+      - ./orizon-frontend/.env
+    volumes:
+      - ./orizon-frontend:/app
+      - /app/node_modules   # <-- Isola la cartella node_modules del container
+    depends_on:
+      - backend
