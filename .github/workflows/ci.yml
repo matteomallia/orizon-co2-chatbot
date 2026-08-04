@@ -1,4 +1,4 @@
-name: Orizon CI Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -11,21 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout del codice dal repository
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Configurazione dell'ambiente Node.js
-      - name: Setup Node.js Environment
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            orizon-frontend/package-lock.json
-            orizon-backend/package-lock.json
+          node-version: '20'
 
-      # 3. LINTING & BUILD FRONTEND
+      # --- FRONTEND QUALITY CHECKS ---
       - name: Install Frontend Dependencies
         run: |
           cd orizon-frontend
@@ -36,17 +30,22 @@ jobs:
           cd orizon-frontend
           npm run lint
 
-      - name: Run Frontend Build Check (Vite Build)
+      - name: Run Frontend Build Check
         run: |
           cd orizon-frontend
           npm run build
 
-      # 4. LINTING & INSTALL BACKEND
+      # --- BACKEND QUALITY CHECKS ---
       - name: Install Backend Dependencies
         run: |
           cd orizon-backend
           npm ci
 
-      # 5. VERIFICA E BUILD FINALE CONTAINER DOCKER
+      - name: Run Backend Linting
+        run: |
+          cd orizon-backend
+          npm run lint
+
+      # --- CONTAINERIZATION ---
       - name: Build Docker Containers
         run: docker compose build
